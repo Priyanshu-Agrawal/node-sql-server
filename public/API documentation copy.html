@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>API Documentation</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <style>
+        #result {
+            /* position: sticky; */
+            top: 0;
+            /* height: 100vh; */
+            /* overflow: auto; */
+            /* resize: both; */
+            /* border-left: 1px solid #ddd; */
+            /* padding: 20px; */
+        }
+
+        .list-group {
+            /* position: sticky; */
+            top: 0;
+            /* height: 100vh; */
+            /* overflow: auto; */
+        }
+    </style>
+    <script>
+        async function callAPI(url, method, body = null) {
+            try {
+                const options = { method };
+                if (body) {
+                    options.headers = { "Content-Type": "application/json" };
+                    options.body = JSON.stringify(body);
+                }
+                const response = await fetch(url, options);
+
+                if (!response.ok) {
+                    throw Error(`Response status was not ok: ${response.status}`);
+                }
+
+                const data = await response.text();
+                document.getElementById("result").innerHTML = data;
+                console.log(data);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function callAPINew(buttonElement) {
+            console.log("Clicked");
+            const url = buttonElement.querySelector(".route").innerHTML;
+            const bodyObjElement = buttonElement.querySelector(".bodyObj");
+            const bodyObj = bodyObjElement ? bodyObjElement.innerHTML : null;
+            const methodName = buttonElement.querySelector(".methodName").innerHTML;
+            console.log(`API: ${url} | Method: ${methodName} | Body: ${bodyObj}`);
+
+            /* try {
+                    const options = { method };
+                    if (body) {
+                        options.headers = { 'Content-Type': 'application/json' };
+                        options.body = JSON.stringify(body);
+                    }
+                    const response = await fetch(url, options);
+                    
+                    if (!response.ok) {
+                        throw Error(`Response status was not ok: ${response.status}`);
+                    }
+                    
+                    const data = await response.text();
+                    document.getElementById('result').innerHTML = data;
+                    console.log(data);
+                } catch (e) {
+                    console.error(e);
+                } */
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="my-4">API Documentation</h1>
+        <p>Note: Later I will make the API documentation interactive</p>
+        <div class="list-group">
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/</h4>
+                    <p>Returns This Page'.</p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">GET</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true" class="route">http://localhost:5000/api/</code>
+                    </h5>
+                </div>
+            </button>
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/getAll</h4>
+                    <p>Returns all table names from the database.</p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">GET</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true" class="route">http://localhost:5000/api/getAll</code>
+                    </h5>
+                </div>
+            </button>
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/table/:tableName</h4>
+                    <p>
+                        Returns all records from the specified table. If query parameters
+                        are provided, it filters the data based on the query parameters.
+                    </p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">GET</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true"
+                            class="route">http://localhost:5000/api/table/employee?name=John</code>
+                    </h5>
+                </div>
+            </button>
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/table/:tableName/:columnName/:columnValue</h4>
+                    <p>
+                        Returns records from the specified table based on a column name
+                        and value.
+                    </p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">GET</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true"
+                            class="route">http://localhost:5000/api/table/employee/name/John</code>
+                    </h5>
+                </div>
+            </button>
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/call/:procedureName</h4>
+                    <p>Executes a stored procedure in the database.</p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">GET</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true" class="route">http://localhost:5000/api/call/myProcedure</code>
+                    </h5>
+                    with body
+                    <code class="bodyObj">{"params": "param1", "params2",..., "paramN"}</code>
+                </div>
+            </button>
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/table/:tableName</h4>
+                    <p>Inserts data into a specific table.</p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">POST</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true" class="route">http://localhost:5000/api/table/employee</code>
+                    </h5>
+                    with body <code class="bodyObj">{"name": "John", "age": 30}</code>
+                </div>
+            </button>
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/table/:tableName/bulk</h4>
+                    <p>Inserts bulk data into a specific table.</p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">POST</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true" class="route">http://localhost:5000/api/table/employee/bulk</code>
+                    </h5>
+                    with body
+                    <code class="bodyObj">[{"name": "John", "age": 30}, {"name": "John", "age": 27}]</code>
+                </div>
+            </button>
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/table/:tableName</h4>
+                    <p>Updates data in a specific table.</p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">PUT</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true" class="route">http://localhost:5000/api/table/employee</code>
+                    </h5>
+                    with body <code class="bodyObj">{"name": "John", "age": 31}</code>
+                </div>
+            </button>
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/table/:tableName/all</h4>
+                    <p>Deletes all data from a specific table.</p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">DELETE</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true" class="route">http://localhost:5000/api/table/employees/all</code>
+                    </h5>
+                </div>
+            </button>
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/table/:tableName</h4>
+                    <p>Deletes data from a specific table based on a condition.</p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">DELETE</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true" class="route">http://localhost:5000/api/table/employees</code>
+                    </h5>
+                    with body <code class="bodyObj">{"name": "John"}</code>
+                </div>
+            </button>
+            <button onclick="callAPINew(this)" class="list-group-item list-group-item-action">
+                <div>
+                    <h4>/api/</h4>
+                    <p>
+                        Connects to the database and retrieves data from a specific table.
+                    </p>
+                    <h5>
+                        Method:
+                        <span class="badge badge-primary badge-pill methodName">POST</span>
+                    </h5>
+                    <h5>
+                        Example Usage:
+                        <code contenteditable="true" class="route">http://localhost:5000/api/</code>
+                    </h5>
+                    with body <code class="bodyObj">{"table": "employees"}</code>
+                </div>
+            </button>
+        </div>
+    </div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
