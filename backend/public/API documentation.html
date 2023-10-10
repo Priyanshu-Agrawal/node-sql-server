@@ -8,6 +8,15 @@
 			padding: 0;
 			margin: 0;
 		}
+		.card{
+			transition: all 0.4s ease;
+		}
+		.card:hover{
+			box-shadow: 0 0 10px 5px rgba(107, 103, 105, 0.3);
+			cursor: default;
+			transform: scale(1.01);
+			transition: all 0.4s ease;
+		}
 		.responseBody {
 			height: 0;
 			overflow:hidden;
@@ -20,10 +29,44 @@
 			width: 100%;
 			height:200px;
 			resize: vertical;
+			cursor: text;
 		}
 		.card-header>h4:first-of-type::before{
 			content: ">";
 			margin-right: 5px;
+		}
+
+		input[type="radio"] {
+			position: relative;
+		}
+
+		.routeLabel input[type="radio"] {
+			accent-color: palevioletred;
+			/* display: none; */
+		}
+
+
+		.routeLabel input[type="radio"]::before{
+			content: "";
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			border-radius: 50%;
+			border: 1px solid palevioletred;
+		}
+		.routeLabel input[type="radio"]:checked::before{
+			box-shadow: 0 0 10px 5px rgba(216, 112, 147, 0.055);
+		}
+
+		.routeLabel input[type="radio"]:not(:checked) + code {
+ 			text-decoration: line-through;
+		}
+		
+		
+		.routeLabel input[type="radio"]+code:hover {
+			text-shadow: 0 0 3px rgba(216, 112, 112, 0.377);
+			text-decoration: blink;
+			/* display: none; */
 		}
 	</style>
 	<script>
@@ -44,7 +87,7 @@
 				}
 				const output = {}
 				const contentType = response.headers.get('content-type');
-				console.log('contentType',contentType);
+				// console.log('contentType',contentType);
 				if (contentType.includes('text/plain')) {
 					const data = await response.text();
 					output.contentType = "text";
@@ -71,7 +114,7 @@
 
 		const createCallAPIparams = async (parentElement) =>  {
 			console.log("Clicked");
-			const url = parentElement.querySelector(".route").innerHTML;
+			const url = parentElement.querySelector(".route") ? parentElement.querySelector(".route").innerHTML : parentElement.querySelector('input[name="route"]:checked').value;
 			const bodyObjElement = parentElement.querySelector(".bodyObj");
 			const bodyObj = bodyObjElement ? JSON.stringify(bodyObjElement.innerHTML) : null;
 			const methodName = parentElement.querySelector(".methodName").innerHTML;
@@ -131,11 +174,11 @@
 						<button onclick="createCallAPIparams(this.parentNode)" class="btn btn-primary mt-3">Try it</button>
 						<div class="responseBody">
 							<div class="card-body">
-							<h5 class="responseType">Response:</h5>
-							<pre class="line-numbers jsonOutput">
-								<code class="language-json"></code>
-							</pre> 
-							<iframe class="htmlOutput"></iframe> 
+								<h5 class="responseType">Response:</h5>
+								<pre class="line-numbers jsonOutput">
+									<code class="language-json"></code>
+								</pre> 
+								<iframe class="htmlOutput"></iframe>
 							</div>
 						</div>
 					</div>
@@ -176,8 +219,15 @@
 						<h5>Method:
 							<span class="badge bg-primary rounded-pill methodName">GET</span>
 						</h5>
-						<h5>Example Usage:
-							<code contenteditable="true" class="route">http://localhost:5000/api/table/test?userName='Dummy'</code>
+						<h5>Example Usage:<br>
+							<label class="routeLabel">
+								<input  type="radio" name="route" value="http://localhost:5000/api/table/test">
+								<code>http://localhost:5000/api/table/test</code>
+							</label><br>
+							<label class="routeLabel">
+								<input  type="radio" name="route" value="http://localhost:5000/api/table/test?userName='Dummy'" checked>
+								<code>http://localhost:5000/api/table/test?userName='Dummy'</code>
+							</label>
 						</h5>
 						<button onclick="createCallAPIparams(this.parentNode)" class="btn btn-primary mt-3">Try it</button>
 						<div class="responseBody">

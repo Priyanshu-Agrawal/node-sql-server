@@ -4,6 +4,14 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 const apiRouter = require('./routes/api');
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+  });
+  
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use('/api', apiRouter);

@@ -79,7 +79,7 @@ const QueryBuilder = {
 
 
 const runProcedure = async (procedureName, params) => {
-    console.log('Running procedure')
+    // console.log('Running procedure')
     try {
       await sql.connect(config)
   
@@ -97,7 +97,7 @@ const runProcedure = async (procedureName, params) => {
       });
   
       const result = await request.query(query)
-      console.log("Procedure result:", result.recordset)
+    //   console.log("Procedure result:", result.recordset)
       return result.recordset ?? result
     } catch (err) {
       console.error('Error:', err)
@@ -107,8 +107,8 @@ const runProcedure = async (procedureName, params) => {
 
   
 const errorsExtracter = async (errorObject) =>{
-    const errorMessages = [errorObject.message, ...errorObject.precedingErrors.map(error => error.message)]
-    return errorMessages
+    // const errorMessages = [errorObject.message, ...errorObject.precedingErrors.map(error => error.message)]
+    return errorObject;
 }
 
 module.exports = {

@@ -1,8 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
+const jwt = require('jsonwebtoken');
 const config = require('../config');
 const DBController = require('../controller/DBController');
+
+
+const authenticateToken = async (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token == null) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) return res.sendStatus(403);
+
+        req.user = decoded.data;
+        next();
+    });
+}
 
 
 router.use('/', async (req, res, next) => {
@@ -13,6 +29,13 @@ router.use('/', async (req, res, next) => {
     next();
 })
 
+router.get('/admin', authenticateToken, (req, res) => {
+    if (req.user.AccessLevel <= 1) {
+      res.json({ message: 'Admin route', user: req.user });
+    } else {
+      res.sendStatus(401);
+    }
+  });
 
 router.get('/', async (req, res) => {
        res.sendFile(process.cwd() + '/public/API documentation.html');
@@ -22,6 +45,21 @@ router.get('/', async (req, res) => {
     }
 )
 
+router.post('/call/authenticateUser', async (req, res) => {
+    // console.log('procedure call trigerred');
+    const procedureName = 'AuthenticateUser';
+    const params = req.body.params;
+    data = await DBController.runProcedure(procedureName, params)
+    // res.send(data);
+    if(data[0].Message == 'Login successful'){
+        const token = jwt.sign({data}, process.env.JWT_SECRET);
+        res.json({...data[0], token});
+    }else{
+        res.json(data[0]);
+    }
+    // console.log(token);
+    
+})
 
 router.get('/getAll', async (req, res) => {
     query = `SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_catalog = '${process.env.DB_NAME}'`;
@@ -46,9 +84,9 @@ router.get('/table/:tableName/', async (req, res) => {
     }else{
         const columnName  = Object.keys(req.query)[0];
         const columnValue = req.query[columnName];
-        query = `select * from ${req.params.tableName} where ${columnName} = ${columnValue}`
+        query = `select * from ${req.params.tableName} where ${columnName} LIKE ${columnValue} + '%'`
     }
-    // console.log(query);
+    console.log(query);
     data = await DBController.runQuery(query)
     res.send(data);
 })
